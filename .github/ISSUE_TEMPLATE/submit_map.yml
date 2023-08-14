@@ -12,7 +12,7 @@ body:
     attributes:
       label: Upload Map
       description: |
-        Rename the map .wz to end in .zip, and drag to the field below (must be a single map!) ([help](https://github.com/Warzone2100/map-submission/docs/submit_map.md))
+        Rename the map .wz to end in .zip, and drag to the field below (must be a single map!) ([help](https://github.com/Warzone2100/map-submission/blob/main/docs/submit_map.md))
       placeholder: |
         1.) Click to select this text area.
         2.) Attach a map .zip here. (By dragging and dropping, pasting, etc.)
