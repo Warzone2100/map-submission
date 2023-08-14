@@ -1,7 +1,7 @@
 # Submitting a Map
 
 To submit a new map, you must be logged-in to your GitHub account.
-> If you don't yet have a GitHub account, you can register here:
+> If you don't yet have a GitHub account, you can register here: https://github.com/signup
 
 1. Go to create a **[New Issue](https://github.com/Warzone2100/map-submission/issues/new/choose)**.
 2. On the option titled "**Submit Map**", click the green "**Get Started**" button.
