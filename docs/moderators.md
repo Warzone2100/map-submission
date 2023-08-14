@@ -5,13 +5,15 @@ Moderators help manage and verify new map submissions.
 ## Moderator Goals:
 
 - [x] Verify the automatic validation
-- [x] Test each new map to make sure there aren't issues that need to be resolved
+- [x] Test each new map to make sure there aren't issues that need to be resolved, and that it's playable
+- [x] Verify the map is not an "old spec slot" map (with unplayable player slots)
 - [x] Check for any problematic content or descriptions
 
 ### Tips:
 
 - The validation bot will automatically post a comment that contains substantial information.
 - The validation bot links to a `map-preview` asset that is automatically uploaded, containing a 2d preview image of the map.
+- Old-fashioned "spec slot" maps (where player slots were manually constructed to be unplayable - used prior to the introduction of proper spectators support in Warzone 2100) should **not** be approved. If they are the only variant of a particular map, they should be modified to remove the old unplayable slots.
 
 ## Moderator Slash Commands:
 
