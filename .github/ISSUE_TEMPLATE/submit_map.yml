@@ -1,0 +1,47 @@
+name: 📥 Submit Map
+description: Submit a new map to the Warzone 2100 map database
+title: "[MAP]: "
+labels: ["map", "unprocessed"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        To start the process of submitting a new Warzone 2100 map to the map database, please fill out the form below.
+  - type: textarea
+    id: map-upload
+    attributes:
+      label: Upload Map
+      description: |
+        Rename the map .wz to end in .zip, and drag to the field below (must be a single map!) ([help](https://github.com/Warzone2100/map-submission/docs/submit_map.md))
+      placeholder: |
+        1.) Click to select this text area.
+        2.) Attach a map .zip here. (By dragging and dropping, pasting, etc.)
+    validations:
+      required: true
+  - type: dropdown
+    id: map-creator
+    attributes:
+      label: Authorship
+      description: "If you're the author of this map, change this option:"
+      options:
+        - "Other: This map was made by someone else"
+        - "Mine: I am the author of this map"
+    validations:
+      required: true
+  - type: textarea
+    id: description
+    attributes:
+      label: "Map Description (optional)"
+      description: Optional additional details, provided in English, as a README for the map. (optional)
+      render: text
+    validations:
+      required: false
+  - type: textarea
+    id: reviewer-notes
+    attributes:
+      label: Notes for Reviewers (optional)
+      description: |
+        Any additional comments or notes for reviewers
+        Note: These will *not* be added to the map database - they will only be visible in this submission posting.
+    validations:
+      required: false
