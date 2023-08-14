@@ -1,0 +1,83 @@
+name: 'Process Comment'
+
+on:
+  issues:
+    types: [opened]
+  issue_comment:
+    types: [created]
+
+jobs:
+  process_comment:
+    # - Only run for issue comments (!github.event.issue.pull_request)
+    # - Only run when a new map submission issue *or* when comment body starts with a known command
+    #   - /approve
+    #   - /replace
+    if: ${{ !github.event.issue.pull_request && ((github.event_name == 'issues') || (github.event_name == 'issue_comment' && (startsWith(github.event.comment.body, '/approve') || startsWith(github.event.comment.body, '/replace ')) )) }}
+    
+    runs-on: ubuntu-latest
+    
+    permissions:
+      issues: write
+      contents: read
+    
+    steps:
+      - name: Get map database / scripts repo
+        env:
+          MAP_DB_REPO_URL: 'https://github.com/Warzone2100/maps-database.git'
+          MAP_DB_REPO_MAIN_BRANCH: main
+        run: |
+          git clone --branch "${MAP_DB_REPO_MAIN_BRANCH}" --depth 1 --single-branch -- "${MAP_DB_REPO_URL}" "map-db"
+
+      - name: Get issue details
+        env:
+          JSON_ISSUE: ${{ toJSON(github.event.issue) }}
+        run: printf '%s\n' "$JSON_ISSUE" > issue.json
+    
+      - name: Get comment details
+        if: ${{ github.event_name == 'issue_comment' }}
+        env:
+          JSON_COMMENT: ${{ toJSON(github.event.comment) }}
+        run: printf '%s\n' "$JSON_COMMENT" > comment.json
+      
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+      
+      - name: Install map script dependencies
+        id: dependencies
+        env:
+          MAP_DB_REPO_PATH: '${{ github.workspace }}/map-db'
+        run: |
+          pip install -r "${MAP_DB_REPO_PATH}/scripts/requirements.txt"
+          source "${MAP_DB_REPO_PATH}/.ci/github/install_maptools.sh"
+      
+      - name: Process issue comment
+        env:
+          MAP_DB_REPO_PATH: '${{ github.workspace }}/map-db'
+          GH_TOKEN: ${{ github.token }}
+          WZ_GH_APP_MAPREPO_MANAGER_APP_ID: ${{ secrets.WZ_GH_APP_MAPREPO_MANAGER_APP_ID }}
+          WZ_GH_APP_MAPREPO_MANAGER_PRIVATE_KEY_SECRET: ${{ secrets.WZ_GH_APP_MAPREPO_MANAGER_PRIVATE_KEY_SECRET }}
+          # Use the bot as committer for any new map repo commits
+          # See: https://github.com/orgs/community/discussions/24664
+          GIT_COMMITTER_NAME: 'wz2100-map-repo-manager[bot]'
+          GIT_COMMITTER_EMAIL: '107586528+wz2100-map-repo-manager[bot]@users.noreply.github.com'
+        run: |
+          set +e
+          mkdir -p "temp"
+          mkdir -p "upload"
+          "${MAP_DB_REPO_PATH}/scripts/handle_map_submission_comment.py" --map-repos-config "${MAP_DB_REPO_PATH}/config/map-repos-config.json" --output-temp-folder ./temp --gh-repo "${GITHUB_REPOSITORY}" --gh-run-id "${GITHUB_RUN_ID}" --gh-issue issue.json --gh-comment comment.json --gen-assets-folder "./upload" --ignore-missing-comment
+          exitcode="$?"
+      
+      - name: Upload map preview artifact (if present)
+        uses: actions/upload-artifact@v3
+        with:
+          name: map-preview
+          path: ./upload/map-preview.png
+          if-no-files-found: ignore
+
+      - name: Upload converted map artifact (if present)
+        uses: actions/upload-artifact@v3
+        with:
+          name: map-converted
+          path: ./upload/*-converted.wz
+          if-no-files-found: ignore
