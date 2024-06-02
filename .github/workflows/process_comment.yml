@@ -39,7 +39,7 @@ jobs:
           JSON_COMMENT: ${{ toJSON(github.event.comment) }}
         run: printf '%s\n' "$JSON_COMMENT" > comment.json
       
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
       
@@ -69,14 +69,14 @@ jobs:
           exitcode="$?"
       
       - name: Upload map preview artifact (if present)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: map-preview
           path: ./upload/map-preview.png
           if-no-files-found: ignore
 
       - name: Upload converted map artifact (if present)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: map-converted
           path: ./upload/*-converted.wz
